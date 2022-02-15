@@ -8,20 +8,22 @@ def fewest_greens(response1, response2):
     else:
         return 0
 
+
 def fewest_yellows(response1, response2):
-        yellows1 = len(response1.replace("🟩", "").replace("⬛", ""))
-        yellows2 = len(response2.replace("🟩", "").replace("⬛", ""))
-        if yellows1 < yellows2:
-            return 1
-        elif yellows2 < yellows1:
-            return -1
-        else:
-            return 0
+    yellows1 = len(response1.replace("🟩", "").replace("⬛", ""))
+    yellows2 = len(response2.replace("🟩", "").replace("⬛", ""))
+    if yellows1 < yellows2:
+        return 1
+    elif yellows2 < yellows1:
+        return -1
+    else:
+        return 0
+
 
 def leftmost_clue(response1, response2):
     index1_green = 99
     index1_yellow = 99
-    index2_green =99
+    index2_green = 99
     index2_yellow = 99
     try:
         index1_green = response1.index("🟩")
@@ -47,3 +49,22 @@ def leftmost_clue(response1, response2):
         return -1
     else:
         return 0
+
+
+def pluralize(singular, plural, number):
+    return singular if number == 1 else plural
+
+
+# Convert seconds into rounded mintute / second string
+def getTimeString(seconds):
+    if seconds < 60:
+        return "{:.0f} {}".format(seconds, pluralize("second", "seconds", seconds))
+
+    minutes = seconds // 60
+    seconds = seconds - minutes
+    return "{:.0f} {} and {:.0f} {}".format(
+        minutes,
+        pluralize("minute", "minutes", minutes),
+        seconds,
+        pluralize("second", "seconds", seconds),
+    )

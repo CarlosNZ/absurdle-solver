@@ -1,14 +1,14 @@
 from functools import cmp_to_key
-from helpers import fewest_greens, fewest_yellows, leftmost_clue
+from helpers import fewest_greens, fewest_yellows, leftmost_clue, getTimeString
 import os
+from time import time
 
 # CONSTANTS
-THRESHOLD = 300  # Abandon branch if first guess returns a bucket larger than this
+BUCKET_THRESHOLD = 350  # Abandon branch if first guess returns a bucket larger than this -- higher number will take longer
 
-# with open('wordle-allowed-guesses.txt') as f:
-with open("wordlists/wordle_answers.txt") as f:
+with open("wordlists/wordle_wordlist.txt") as f:
     allowed_guesses = [a.strip() for a in f.readlines()]
-with open("wordlists/wordle_answers.txt") as f:
+with open("wordlists/wordle_wordlist.txt") as f:
     answers = [a.strip() for a in f.readlines()]
 
 
@@ -37,6 +37,7 @@ def put_answers_into_buckets(guess, answers=answers):
 
 
 def sort_buckets(buckets):
+    # Tie-breaking method explained in comments: https://qntm.org/absurdle
     def bucket_compare(bucket1, bucket2):
         # Compare size of buckets
         if len(bucket1[1]) > len(bucket2[1]):
@@ -66,13 +67,13 @@ def search(guess_list, answers=answers, current_chain=[]):
     # print("Possible answers", answers)
     for word in guess_list:
         if len(current_chain) < 1:
-            print("Trying: ", word)
+            print("Looking for solutions starting with: ", word)
         response, new_answers = sort_buckets(put_answers_into_buckets(word, answers))[0]
-        if len(new_answers) > THRESHOLD:
+        if len(new_answers) > BUCKET_THRESHOLD:
             continue
         # print("New answers", new_answers)
         if len(new_answers) == 1:
-            print("Solved!")
+            print("Solution found!")
             current_chain.append(word)
             current_chain.append(new_answers[0])
             solutions.append(current_chain)
@@ -84,17 +85,21 @@ def search(guess_list, answers=answers, current_chain=[]):
 
 
 if __name__ == "__main__":
-    # print(get_response("fifty", "gypsy"))
-    # print(len(put_answers_into_buckets("terns").keys()))
-    # print(sort_buckets(put_answers_into_buckets("terns")))
     solutions = []
     f = open("solutions_wip.txt", "w")
+    t = time()
     search(allowed_guesses)
-    print("Done")
+    runtime = time() - t
+    print("Done in {} seconds".format(runtime))
+    f.write(
+        "\n\nFound {} solutions in {}".format(len(solutions), getTimeString(runtime))
+    )
     f.close()
     try:
         os.remove("solutions.txt")
     except:
         pass
-    os.rename("solutions_wip.txt", "solutions.txt")
+    os.rename(
+        "solutions_wip.txt", "solutions_" + str(BUCKET_THRESHOLD) + "_threshold.txt"
+    )
     print(solutions)
