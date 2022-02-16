@@ -20,7 +20,7 @@ def fewest_yellows(response1, response2):
         return 0
 
 
-def leftmost_clue(response1, response2):
+def latest_clue(response1, response2):
     index1_green = 99
     index1_yellow = 99
     index2_green = 99
@@ -35,17 +35,17 @@ def leftmost_clue(response1, response2):
         pass
     first_clue_1 = min(index1_green, index1_yellow)
     try:
-        index2_green = response1.index("🟩")
+        index2_green = response2.index("🟩")
     except:
         pass
     try:
-        index2_yellow = response1.index("🟨")
+        index2_yellow = response2.index("🟨")
     except:
         pass
     first_clue_2 = min(index2_green, index2_yellow)
-    if first_clue_1 < first_clue_2:
+    if first_clue_1 > first_clue_2:
         return 1
-    elif first_clue_2 < first_clue_1:
+    elif first_clue_2 > first_clue_1:
         return -1
     else:
         return 0
@@ -61,7 +61,7 @@ def getTimeString(seconds):
         return "{:.0f} {}".format(seconds, pluralize("second", "seconds", seconds))
 
     minutes = seconds // 60
-    seconds = seconds - minutes
+    seconds = seconds - 60 * minutes
     return "{:.0f} {} and {:.0f} {}".format(
         minutes,
         pluralize("minute", "minutes", minutes),

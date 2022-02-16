@@ -1,15 +1,13 @@
 from functools import cmp_to_key
-from helpers import fewest_greens, fewest_yellows, leftmost_clue, getTimeString
+from helpers import fewest_greens, fewest_yellows, latest_clue, getTimeString
 import os
 from time import time
+from datetime import datetime
+import sys
 
-# CONSTANTS
-BUCKET_THRESHOLD = 350  # Abandon branch if first guess returns a bucket larger than this -- higher number will take longer
-
-with open("wordlists/wordle_wordlist.txt") as f:
-    allowed_guesses = [a.strip() for a in f.readlines()]
-with open("wordlists/wordle_wordlist.txt") as f:
-    answers = [a.strip() for a in f.readlines()]
+# Parameters
+BUCKET_THRESHOLD = 300  # Abandon branch if first guess returns a bucket larger than this -- higher number will take longer
+FALLBACK_ANSWERS_FILE = "wordlists/absurdle_wordlist_2022-02-16.txt"
 
 
 def get_response(guess, answer):
@@ -25,7 +23,7 @@ def get_response(guess, answer):
     return "".join(response)
 
 
-def put_answers_into_buckets(guess, answers=answers):
+def put_answers_into_buckets(guess, answers):
     buckets = {}
     for ans in answers:
         response = get_response(guess, ans)
@@ -53,12 +51,12 @@ def sort_buckets(buckets):
         if y == 1 or y == -1:
             return y
         # Still tied, so check left-most clue
-        return leftmost_clue(bucket1[0], bucket2[0])
+        return latest_clue(bucket1[0], bucket2[0])
 
     return sorted(buckets.items(), key=cmp_to_key(bucket_compare), reverse=True)
 
 
-def search(guess_list, answers=answers, current_chain=[]):
+def search(guess_list, answers, current_chain=[]):
     if len(current_chain) > 2:
         # print("Abandoning branch:", current_chain)
         return
@@ -77,7 +75,9 @@ def search(guess_list, answers=answers, current_chain=[]):
             current_chain.append(word)
             current_chain.append(new_answers[0])
             solutions.append(current_chain)
+            f = open("solutions_wip.txt", "a")
             f.write(", ".join(current_chain) + "\n")
+            f.close()
             print(current_chain)
             return current_chain
         else:
@@ -85,11 +85,23 @@ def search(guess_list, answers=answers, current_chain=[]):
 
 
 if __name__ == "__main__":
+    answers_file = sys.argv[1] if len(sys.argv) > 1 else FALLBACK_ANSWERS_FILE
+
+    with open(answers_file) as f:
+        allowed_guesses = [a.strip() for a in f.readlines()]
+    with open(answers_file) as f:
+        answers = [a.strip() for a in f.readlines()]
+
     solutions = []
     f = open("solutions_wip.txt", "w")
+    f.write("Solutions found using answers list: \n  " + answers_file + "\n")
+    f.write("Bucket size threshold: " + str(BUCKET_THRESHOLD) + "\n")
+    f.write("Started at: " + datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + "\n\n")
+    f.close()
     t = time()
-    search(allowed_guesses)
+    search(allowed_guesses, answers)
     runtime = time() - t
+    f = open("solutions_wip.txt", "a")
     print("Done in {} seconds".format(runtime))
     f.write(
         "\n\nFound {} solutions in {}".format(len(solutions), getTimeString(runtime))
