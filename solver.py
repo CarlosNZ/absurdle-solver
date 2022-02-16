@@ -6,7 +6,8 @@ from datetime import datetime
 import sys
 
 # Parameters
-BUCKET_THRESHOLD = 400  # Abandon branch if first guess returns a bucket larger than this -- higher number will take longer
+BUCKET_THRESHOLD = 200  # Abandon branch if first guess returns a bucket larger than this -- higher number will take longer
+MAX_COMBINED_BUCKETS = 20
 ANSWERS_FILE = "wordlists/absurdle_wordlist_2022-02-16.txt"
 
 
@@ -60,6 +61,17 @@ def sort_buckets(buckets):
     return sorted(buckets.items(), key=cmp_to_key(bucket_compare), reverse=True)
 
 
+def combine_answers(buckets):
+    # print(buckets)
+    merged_answers = buckets[0][1]
+    index = 1
+    # print("Merged", merged_answers, index)
+    while len(merged_answers) < MAX_COMBINED_BUCKETS or index == (len(buckets) - 1):
+        merged_answers = merged_answers + buckets[index][1]
+        index += 1
+    return merged_answers
+
+
 def search(guess_list, answers, current_chain=[]):
     if len(current_chain) > 2:
         # print("Abandoning branch:", current_chain)
@@ -70,13 +82,17 @@ def search(guess_list, answers, current_chain=[]):
     for word in guess_list:
         if len(current_chain) < 1:
             print("Looking for solutions starting with: ", word)
+        buckets = sort_buckets(put_answers_into_buckets(word, answers))
+        # if len(current_chain) < 1:
+        #     print("Largest bucket:", len(buckets[0][1]))
+        if len(buckets[0][1]) > BUCKET_THRESHOLD and not single_word_search:
+            continue
+        # new_answers = combine_answers(buckets)
         response, new_answers = sort_buckets(put_answers_into_buckets(word, answers))[0]
         # print()
         # print(current_chain + [word])
         # print(response)
         # print(new_answers)
-        if len(new_answers) > BUCKET_THRESHOLD and not single_word_search:
-            continue
         if len(new_answers) == 1:
             print("Solution found!")
             solution = current_chain + [word] + [new_answers[0]]

@@ -1,0 +1,9 @@
+Solutions found using answers list: 
+  wordlists/absurdle_wordlist_2022-02-16.txt
+Bucket size threshold: 200
+Started at: 02/16/2022, 17:46:54
+
+alone, demur, sheet, ethic
+
+
+Found 1 solutions in 16 seconds
