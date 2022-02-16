@@ -6,20 +6,24 @@ from datetime import datetime
 import sys
 
 # Parameters
-BUCKET_THRESHOLD = 300  # Abandon branch if first guess returns a bucket larger than this -- higher number will take longer
-FALLBACK_ANSWERS_FILE = "wordlists/absurdle_wordlist_2022-02-16.txt"
+BUCKET_THRESHOLD = 400  # Abandon branch if first guess returns a bucket larger than this -- higher number will take longer
+ANSWERS_FILE = "wordlists/absurdle_wordlist_2022-02-16.txt"
 
 
 def get_response(guess, answer):
-    answer = list(answer)
+    # answer = list(answer)
     response = []
-    for index, char in enumerate(list(guess)):
+    unmarked_chars = answer
+    for index, char in enumerate(guess):
         if char == answer[index]:
             response.append("🟩")
-        elif char in answer:
-            response.append("🟨")
+            unmarked_chars = unmarked_chars.replace(char, "", 1)
         else:
             response.append("⬛")
+    for index, char in enumerate(guess):
+        if char in unmarked_chars and response[index] != "🟩":
+            response[index] = "🟨"
+            unmarked_chars = unmarked_chars.replace(char, "", 1)
     return "".join(response)
 
 
@@ -67,34 +71,44 @@ def search(guess_list, answers, current_chain=[]):
         if len(current_chain) < 1:
             print("Looking for solutions starting with: ", word)
         response, new_answers = sort_buckets(put_answers_into_buckets(word, answers))[0]
-        if len(new_answers) > BUCKET_THRESHOLD:
+        # print()
+        # print(current_chain + [word])
+        # print(response)
+        # print(new_answers)
+        if len(new_answers) > BUCKET_THRESHOLD and not single_word_search:
             continue
-        # print("New answers", new_answers)
         if len(new_answers) == 1:
             print("Solution found!")
-            current_chain.append(word)
-            current_chain.append(new_answers[0])
-            solutions.append(current_chain)
+            solution = current_chain + [word] + [new_answers[0]]
+            solutions.append(solution)
             f = open("solutions_wip.txt", "a")
-            f.write(", ".join(current_chain) + "\n")
+            f.write(", ".join(solution) + "\n")
             f.close()
-            print(current_chain)
-            return current_chain
+            print(solution)
+            continue
         else:
+            # print("Current chain: ", current_chain + [word])
             search(new_answers, new_answers, current_chain + [word])
 
 
 if __name__ == "__main__":
-    answers_file = sys.argv[1] if len(sys.argv) > 1 else FALLBACK_ANSWERS_FILE
+    single_word_search = sys.argv[1] if len(sys.argv) > 1 else None
 
-    with open(answers_file) as f:
+    with open(ANSWERS_FILE) as f:
         allowed_guesses = [a.strip() for a in f.readlines()]
-    with open(answers_file) as f:
+    with open(ANSWERS_FILE) as f:
         answers = [a.strip() for a in f.readlines()]
 
     solutions = []
     f = open("solutions_wip.txt", "w")
-    f.write("Solutions found using answers list: \n  " + answers_file + "\n")
+
+    if single_word_search:
+        print("Performing exhaustive search starting with: " + single_word_search)
+        search([single_word_search], answers)
+        print(solutions)
+        quit()
+
+    f.write("Solutions found using answers list: \n  " + ANSWERS_FILE + "\n")
     f.write("Bucket size threshold: " + str(BUCKET_THRESHOLD) + "\n")
     f.write("Started at: " + datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + "\n\n")
     f.close()
@@ -107,11 +121,10 @@ if __name__ == "__main__":
         "\n\nFound {} solutions in {}".format(len(solutions), getTimeString(runtime))
     )
     f.close()
+    new_filename = "solutions_" + str(BUCKET_THRESHOLD) + "_threshold.txt"
     try:
-        os.remove("solutions.txt")
+        os.remove(new_filename)
     except:
         pass
-    os.rename(
-        "solutions_wip.txt", "solutions_" + str(BUCKET_THRESHOLD) + "_threshold.txt"
-    )
+    os.rename("solutions_wip.txt", new_filename)
     print(solutions)

@@ -11,8 +11,5 @@ To run:
 ```
 python3 solver.py
 ```
- 
 
-### A note about wordlists
-
-I was getting an inconsistincy with Absurdle in terms of the buckets generated. Turns out the wordlist I ha
+Solutions will be displayed on screen as they are found, but the complete list will also be written to a text file.
