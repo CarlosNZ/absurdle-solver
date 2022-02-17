@@ -20,4 +20,4 @@ As mentioned above, this search only considers buckets below a certain threshold
 python3 solver.py [start-word]
 ```
 
-This is by no means a thorough search of the possible space. I have seen other solutions where they are using words that are not found in the largest bucket from the previous guess (which this script doesn't do), which suggests the possible search space is truly enormous. Would love to hear of any optimisations that could find more solutions in less time.
+This is by no means a thorough search of the possible space. I have seen other solutions where they are using words that are not found in the largest bucket from the previous guess (which this script doesn't do), which suggests there is a lot more possible solutions to be found. Would love to hear of any optimisations that could find more solutions in less time.
