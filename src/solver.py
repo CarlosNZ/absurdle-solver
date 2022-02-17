@@ -12,7 +12,6 @@ ANSWERS_FILE = "wordlists/absurdle_wordlist_2022-02-16.txt"
 
 
 def get_response(guess, answer):
-    # answer = list(answer)
     response = []
     unmarked_chars = answer
     for index, char in enumerate(guess):
