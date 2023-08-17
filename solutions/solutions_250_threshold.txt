@@ -1,0 +1,34 @@
+Solutions found using answers list: 
+  wordlists/absurdle_wordlist_2022-02-16.txt
+Bucket size threshold: 250
+Started at: 08/17/2023, 11:27:38
+
+alone, demur, sheet, ethic
+early, point, cubic, ficus
+early, point, humid, ficus
+early, point, mimic, sushi
+early, point, music, ficus
+layer, point, cubic, ficus
+layer, point, humid, ficus
+layer, point, mimic, sushi
+layer, point, music, ficus
+least, groin, dumpy, chuck
+radio, shelf, pence, unmet
+radio, shelf, penne, unmet
+relay, point, cubic, ficus
+relay, point, humid, ficus
+relay, point, mimic, sushi
+relay, point, music, ficus
+slate, groin, dumpy, chuck
+solar, night, dumpy, emcee
+stale, groin, dumpy, chuck
+stole, grain, dumpy, chuck
+store, cling, dumpy, kayak
+yearn, flout, chump, sushi
+yearn, flout, cubic, shush
+yearn, foist, civil, humid
+yearn, hoist, civil, fluid
+yearn, plush, timid, motto
+
+
+Found 26 solutions in 1 minute and 57 seconds

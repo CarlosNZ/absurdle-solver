@@ -6,7 +6,7 @@ from datetime import datetime
 import sys
 
 # Parameters
-BUCKET_THRESHOLD = 200  # Abandon branch if first guess returns a bucket larger than this -- higher number will take longer
+BUCKET_THRESHOLD = 300  # Abandon branch if first guess returns a bucket larger than this -- higher number will take longer
 MAX_COMBINED_BUCKETS = 20
 ANSWERS_FILE = "wordlists/absurdle_wordlist_2022-02-16.txt"
 
